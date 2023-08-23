@@ -1,2 +1,2 @@
 # SQLProcedures
-Estudo de  Procedures,  cria-las utilizando um banco de dados relacional e implementa-las em aplicações.
+Estudo de  Procedures,  cria-las utilizando banco de dados relacional e implementa-las em aplicações.
