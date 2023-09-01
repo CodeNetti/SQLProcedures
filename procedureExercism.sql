@@ -18,16 +18,14 @@ create table tbl_Cli(
 	adicionando campo ds_status como 
     ultima coluna da tabela cliente
 */
-alter table tbl_cli
+alter table tbl_Cli
 add column ds_Status bit not null;
 
 -- adicionando coluna na primeira posição
-alter table tbl_cli
+alter table tbl_Cli
 add column id_Cliente int primary key auto_increment first;
 
--- excluindo coluna da tabela
-alter table tbl_cliente
-add column id_Cliente  int primary key auto_increment first;
+
 
 -- adicionando nova coluna após algum campo
 alter table tbl_cli
@@ -51,10 +49,10 @@ alter table tbl_cli
 change column ds_log ds_Complemento varchar(40) not null;
 
 
-alter table tbl_Cli
+alter table tbl_cli
 modify column nm_log varchar(80) not null;
 
-alter table tbl_Cli
+alter table tbl_cli
 modify column ds_Complemento varchar(40) null;
 
 -- alterando o nome da tabela
@@ -63,7 +61,7 @@ rename to tbl_Cliente;
 
 
 -- comando para ver estrutura da tabela
-desc tbl_cliente;
+desc tbl_Cliente;
 
 create table tbl_foneCli(
 	id_telefone int primary key auto_increment,
@@ -150,7 +148,7 @@ BEGIN
     VALUES (v_id_cliente, p_no_Telefone);
 
 END $$
-
+alter
 DELIMITER 
 
 -- chamando a procedure
@@ -159,5 +157,43 @@ call sp_InsClienteTelefone(
     'Apto 2A', '12345678', 'Centro', 'SP', 'joao123',
     '12456', 1, 'São Paulo', '98765432101'
 );
+
+
+-- procedure para dar um select valores na tabela Pagamento
+create procedure sp_selectCaP()
+SELECT
+    *
+FROM
+    tbl_Cliente
+INNER JOIN
+    tbl_foneCli
+ON
+    tbl_Cliente.id_cliente = tbl_foneCli.id_Cliente;
+
+-- chamando a procedure
+call sp_selectCaP();
+
+
+CREATE PROCEDURE  sp_selectName()
+
+
+ SELECT
+       *
+    FROM
+        tbl_Cliente
+    INNER JOIN
+        tbl_foneCli
+    ON
+        tbl_foneCli.id_Cliente = tbl_Cliente.id_cliente
+    WHERE
+        tbl_Cliente.nm_cliente ='João da Silva';
+   
+call sp_selectName();
+
+
+
+
+    
+
 
 
