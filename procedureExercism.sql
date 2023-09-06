@@ -173,6 +173,8 @@ ON
 -- chamando a procedure
 call sp_selectCaP();
 
+-- procedure para dar um select procurando pelo nome
+
 
 CREATE PROCEDURE  sp_selectName()
 
@@ -193,7 +195,111 @@ call sp_selectName();
 
 
 
-    
+create table tbl_Categoria(
+	cd_Categoria  int primary key auto_increment not null,
+    ds_Categoria varchar(80) not null    
+);
+
+create procedure sp_insrtCa(
+in p_dsCa varchar(80)
+)
+insert into tbl_Categoria(ds_Categoria)
+values(p_dsCa);
+
+
+call  sp_insrtCa('Cadernos');
+call  sp_insrtCa('Canetas');
+call  sp_insrtCa('Mochilas');
+call  sp_insrtCa('Estojos');
+
+select cd_Categoria, ds_Categoria from  tbl_Categoria;
+
+create procedure sp_sctCa(
+)
+select ds_Categoria from  tbl_Categoria;
+
+call  sp_sctCa;
+
+
+create table tbl_Fornecedor(
+	cd_Fornecedor  int primary key auto_increment not null,
+    nm_Fornecedor varchar(80) not null,
+    no_Status int not null
+ 
+);
+
+create table tbl_TelFornecedor(
+	cd_Telefone int primary key auto_increment not null,
+    no_Telefone varchar(11) not null,
+    cd_fornecedor int,
+	constraint foreign key(cd_fornecedor) references tbl_Fornecedor(cd_Fornecedor)    
+);
+
+DELIMITER //
+-- procedure para dar um insert nas tbl_Fornecedor e na  tbl_TelFornecedor
+
+
+create procedure sp_insrtTelandFor(
+    in p_nmFor varchar(80),
+    in p_Status int,
+    in p_noTelefone varchar(11)
+)
+begin
+    declare v_cdFornecedor int;
+
+    insert into tbl_Fornecedor(nm_Fornecedor, no_Status)
+    values(p_nmFor, p_Status);
+
+    set v_cdFornecedor = last_insert_id();
+
+    insert into tbl_TelFornecedor(cd_fornecedor, no_Telefone)
+    values(v_cdFornecedor, p_noTelefone);
+end;
+//
+
+DELIMITER ;
+
+
+
+call  sp_insrtTelandFor('Marcos Perez', 1, '11996668899');
+call  sp_insrtTelandFor('Julia Mendes', 1, '11978455241');
+call  sp_insrtTelandFor('Lilian Matriz', 1, '21998878456');
+call  sp_insrtTelandFor('Rosália Mendes', 1, '21999964545');
+call  sp_insrtTelandFor('Samuel Dantas', 1, '13987456858');
+call  sp_insrtTelandFor('Luiza Monaco', 1, '11988884545');
+call  sp_insrtTelandFor('Sérgio Boaro', 0, '11968574987');
+
+
+DELIMITER $$
+-- procedure para dar um select usando Like, filtrando pelo nome 
+CREATE procedure forneDados(
+	in p_nmFornecedor VARCHAR(80)
+)
+BEGIN
+	SELECT 
+    tbl_Fornecedor.cd_Fornecedor, 
+    tbl_Fornecedor.nm_Fornecedor,
+    tbl_Fornecedor.no_Status 
+FROM 
+    tbl_Fornecedor 
+INNER JOIN 
+    tbl_TelFornecedor 
+ON 
+    tbl_Fornecedor.cd_Fornecedor = tbl_TelFornecedor.cd_fornecedor 
+WHERE 
+    tbl_Fornecedor.nm_Fornecedor LIKE  CONCAT('%', p_nmFornecedor, '%');
+	
+END $$
+
+DELIMITER ;
+
+
+CALL forneDados("Lil");
+
+
+
+
+
 
 
 
