@@ -82,8 +82,6 @@ create table tbl_pagamento
 );
 
 
-
-
 -- procedure para inserir valores na tabela Pagamento
 create procedure sp_iinsPgto(
 in p_NmPgto varchar(15)
@@ -173,8 +171,6 @@ ON
 -- chamando a procedure
 call sp_selectCaP();
 
--- procedure para dar um select procurando pelo nome
-
 
 CREATE PROCEDURE  sp_selectName()
 
@@ -193,26 +189,69 @@ CREATE PROCEDURE  sp_selectName()
 call sp_selectName();
 
 
-
-
+-- Esta procedure utiliza uma condição para que se o valor inserido já existir na tabela ela, é exibida uma mensagem notificando, e caso  o campo ainda não exista, ele seja inserido
 create table tbl_Categoria(
 	cd_Categoria  int primary key auto_increment not null,
     ds_Categoria varchar(80) not null    
 );
-
+DELIMITER //
 create procedure sp_insrtCa(
+
 in p_dsCa varchar(80)
 )
+BEGIN
+IF NOT EXISTS (select ds_Categoria  from tbl_Categoria where ds_Categoria = p_dsCa)
+THEN 
 insert into tbl_Categoria(ds_Categoria)
 values(p_dsCa);
+ELSE
+select 'Essa categoria já existe' as Alerta;
+END IF;
+END //
 
 
-call  sp_insrtCa('Cadernos');
-call  sp_insrtCa('Canetas');
-call  sp_insrtCa('Mochilas');
-call  sp_insrtCa('Estojos');
 
-select cd_Categoria, ds_Categoria from  tbl_Categoria;
+-- chamando a procedure
+
+call  sp_insrtCa('Magic');
+
+
+-- Esta procedure utiliza uma condição para que se o select não existir na tabela, é exibida uma mensagem notificando, e caso
+-- o id exista na tabela o select é efetuado
+
+create procedure sp_mostarCat(
+)
+select ds_Categoria from tbl_Categoria;
+call  sp_mostarCat;
+
+
+DELIMITER //
+create procedure sp_updateCat(
+
+in p_cd int,
+in p_cat varchar(30)
+
+)
+BEGIN
+IF EXISTS (select cd_Categoria  from tbl_Categoria where cd_Categoria = p_cd)
+THEN 
+update tbl_Categoria
+set ds_Categoria = p_cat where cd_Categoria = p_cd;
+ELSE
+select 'Esse  ID não existe' as Alerta;
+END IF;
+END //
+
+
+-- chamando a procedure
+
+call  sp_updateCat(1,'Canetinhas');
+
+
+
+
+
+ 
 
 create procedure sp_sctCa(
 )
@@ -228,6 +267,28 @@ create table tbl_Fornecedor(
  
 );
 
+alter table tbl_Fornecedor
+add column no_CPF char (11) null;
+
+ create procedure sp_altFornecedor(
+
+in p_cd int,
+in p_nm_Forn varchar(80), 
+in p_CPF char(11),
+ in p_ds_status bit,
+ )
+  update tbl_Fornecedor
+  set nm_Fornecedor = p_nm_Forn,
+  no_CPF  = p_CPF,
+  no_Status =  p_ds_status
+  where cd_Fornecedor = p_cd;
+
+  
+  drop procedure sp_altFornecedor;
+  
+  
+
+
 create table tbl_TelFornecedor(
 	cd_Telefone int primary key auto_increment not null,
     no_Telefone varchar(11) not null,
@@ -235,9 +296,9 @@ create table tbl_TelFornecedor(
 	constraint foreign key(cd_fornecedor) references tbl_Fornecedor(cd_Fornecedor)    
 );
 
-DELIMITER //
--- procedure para dar um insert nas tbl_Fornecedor e na  tbl_TelFornecedor
 
+
+DELIMITER //
 
 create procedure sp_insrtTelandFor(
     in p_nmFor varchar(80),
@@ -271,7 +332,7 @@ call  sp_insrtTelandFor('Sérgio Boaro', 0, '11968574987');
 
 
 DELIMITER $$
--- procedure para dar um select usando Like, filtrando pelo nome 
+
 CREATE procedure forneDados(
 	in p_nmFornecedor VARCHAR(80)
 )
